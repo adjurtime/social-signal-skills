@@ -1,0 +1,4 @@
+interface:
+  display_name: "基金持仓跟踪"
+  short_description: "记录基金操作、核算确认份额，并结合市场证据检查持仓风险"
+  default_prompt: "使用 $track-fund-portfolio 自动判断是记录、更新还是复盘我的基金持仓，并给出有依据的条件式建议。"

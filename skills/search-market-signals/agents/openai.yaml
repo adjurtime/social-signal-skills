@@ -1,0 +1,4 @@
+interface:
+  display_name: "市场信号搜索"
+  short_description: "跨平台发现市场叙事并用公告和正式来源核验事实与风险"
+  default_prompt: "使用 $search-market-signals 搜索指定股票、基金、ETF或板块的最新市场信号并核验关键事实。"

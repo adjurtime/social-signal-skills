@@ -1,0 +1,4 @@
+interface:
+  display_name: "社交媒体搜索"
+  short_description: "自动识别问题类型，跨平台检索并核验公开社交信息"
+  default_prompt: "使用 $search-social-media 自动判断我的基本问题，跨平台检索、过滤广告并整理公开社交证据。"
