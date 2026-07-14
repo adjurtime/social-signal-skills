@@ -120,6 +120,10 @@ Choose the safest capable access method in this order:
 4. use Computer Use only when structured browser or connector controls cannot operate the necessary visible interface;
 5. use ordinary web search for discovery or coverage gaps, not as a substitute for native search when native results materially differ.
 
+For each selected platform, verify the first candidate access method with the smallest useful read-only probe. Treat an access path as available only when it returns the platform-native result or content needed for the task; a configured connector, installed command, or visible login is not enough by itself.
+
+Classify the live access state as `available`, `authorization required`, `constrained`, or `unavailable`, and keep one active access path per platform for the current task. On an ordinary transient failure, retry once; if it still fails, move to the next already available and user-authorized method in the order above. Do not invent commands, install packages or connectors, add browser extensions, or request exported credentials as part of a search. Report a material access gap and ask separately before any setup work.
+
 Treat MCP as an access interface, not a credibility signal. An unofficial MCP that wraps fragile private endpoints or browser automation may be less stable and riskier than controlled Chrome. Do not add a connector merely because it is called MCP.
 
 Prefer visible, user-authorized access. Do not use hidden private APIs, CAPTCHA bypasses, anti-detection browsers, proxy pools, or extracted session credentials.
@@ -177,6 +181,7 @@ For each selected platform:
 
 Capture when visible:
 
+- active access path, live access state, and material access limitation;
 - platform, title or atomic claim, account, and identifiable role;
 - post time, described event time, and discovery time;
 - direct URL and visible engagement;
@@ -230,7 +235,7 @@ Return the smallest structure that preserves provenance:
 3. **Strongest signals:** atomic claim, platform, source, time, evidence status, and direct link.
 4. **Consensus, disagreement, and failed counterexamples.**
 5. **Unverified or filtered-content note:** material rumors plus the count and main reasons for excluded commercial or automated items.
-6. **Coverage:** platforms and roles, time window, query families, and meaningful gaps.
+6. **Coverage:** platforms and roles, active access paths and states, time window, query families, and meaningful gaps.
 
 For a quick search, compress these sections. Paraphrase unless exact wording is essential. Never invent quotations, inaccessible content, or population-level conclusions from an unrepresentative sample.
 

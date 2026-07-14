@@ -14,6 +14,29 @@ Use this reference to choose complementary platforms and adapt queries. Treat pl
 | Zhihu | Chinese technical long-form, explanation, practical guides, and rapid synthesis after a topic becomes visible | Login-sensitive search, usually secondary reporting, polished detail may exceed its evidence |
 | YouTube/Bilibili | Long-form explanations, interviews, launches, demonstrations | High reading cost, weak fit for fast alerts, comments are noisy |
 
+## Live access routing
+
+Determine access only after selecting the platforms needed for the question. Do not probe every supported platform.
+
+Use the first working, user-authorized path in this order:
+
+| Priority | Access path | Working means |
+| --- | --- | --- |
+| 1 | Trusted platform connector or MCP | A documented read-only call returns the required native result or content |
+| 2 | Controlled Chrome | The user's existing session exposes the required native search or page without exporting credentials |
+| 3 | In-app or ordinary browser | Public results or pages are directly visible without account-dependent state |
+| 4 | Computer Use | Visible interaction is necessary and structured controls cannot complete the read-only flow |
+| 5 | Ordinary web search | Discovery or corroboration only; label it `web discovery only` when native results were unavailable |
+
+Record one transient task-local state for each selected platform:
+
+- `available`: the active path returned the content required for the task;
+- `authorization required`: supported access exists but needs the user to log in or complete verification visibly;
+- `constrained`: some useful content is available, but native ranking, comments, dates, or result depth is missing;
+- `unavailable`: no existing authorized path can return useful content.
+
+An installed command, configured connector, open browser tab, or successful health endpoint is not proof that platform retrieval works. Use the smallest useful read-only probe, retry an ordinary transient failure once, and then move to the next existing path. Do not install a new backend, add an extension, extract session data, or ask for exported cookies during a search. If native access is unavailable, report the coverage gap instead of treating an empty web search as evidence that no platform content exists.
+
 ## Route by the basic question
 
 Use the primary mode to choose complementary platform roles. These are defaults, not mandatory platform lists.
