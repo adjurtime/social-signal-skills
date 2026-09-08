@@ -12,188 +12,128 @@ description: >-
 
 # Search Market Signals
 
-## Core contract
+Use this skill as the financial-market adapter over `$search-social-media`. Apply the base skill's read-only access, bounded query design, deduplication, evidence labels, and coverage reporting. Add the entity resolution, market-source routing, product facts, jargon mapping, and manipulation-risk checks below.
 
-Use this skill as a financial-market adapter over `$search-social-media`.
+Return a market evidence packet—not a buy/sell/hold instruction, price target, timing call, allocation, or return forecast.
 
-Apply `$search-social-media` for the four basic questions, cross-platform retrieval, deduplication, commercial-content filtering, credibility labels, browser access, and read-only safety. Add only the market-specific entity mapping, source routing, jargon discovery, verification, and output rules below.
+## Safety and evidence boundary
 
-Return a market evidence packet, not a buy, sell, hold, timing, allocation, or return forecast. Separate verified events from narratives, sentiment, and promotion.
+- Use public or account-authorized information only. Never request brokerage credentials, API secrets, holdings, passwords, or private messages.
+- Do not place, simulate, or prepare trades.
+- Separate a verified event from a market narrative, sentiment signal, promotion, and subsequent price movement.
+- Social attention measures visibility within a named sample; it does not establish representative market sentiment, ownership, or causality.
+- Issuer and fund-manager statements are primary for what they disclosed, but are not independent validation of their interpretation.
+- Attach source, market, currency, and as-of time to every price, NAV, flow, holding, valuation, rank, or performance figure.
 
-Use public or account-authorized information only. Never request account passwords, trading credentials, API secrets, holdings, or brokerage access. If a source requires login, ask the user to log in manually in Chrome. Do not place or simulate trades.
+Read `references/sources.md` before selecting community and authoritative sources.
 
-Read [references/sources.md](references/sources.md) before choosing platforms and authoritative sources.
+## 1. Resolve the exact entity
 
-## Interpret the request
+Build a compact entity map before broad search:
 
-Infer the following unless ambiguity would materially change the search:
+- formal name, ticker or fund code, exchange, currency, instrument type, issuer or manager;
+- share class, listing suffix, ADR/ordinary-share relationship, or onshore/offshore variant;
+- tracked index and index provider for index products;
+- relevant sector, theme, principal holdings, and upstream/downstream entities when the question is thematic;
+- Chinese, English, local-language, cashtag, abbreviation, and community aliases.
 
-- instrument or theme: stock, fund, ETF, index, sector, commodity-linked theme, or market-wide event;
-- market and venue: mainland China, Hong Kong, United States, or another jurisdiction;
-- time window: intraday, recent days, recent weeks, or longer baseline;
-- primary question: facts and changes, experience and evaluation, methods and solutions, or opinions and trends;
-- desired signal: official event, emerging narrative, sentiment, disagreement, risk, or jargon.
+Do not merge similar names, share classes, exchanges, currencies, or linked products. Ask only if ambiguity maps to materially different instruments; otherwise state the exact entity searched.
 
-For ordinary requests about `new information`, use **facts and changes** as the primary mode and **opinions and trends** as the secondary mode. Increase verification intensity automatically because financial claims can affect decisions.
+## 2. Define the market question
 
-Ask for clarification only when a name or code maps to multiple materially different instruments or markets.
+Infer:
 
-## Resolve the market entity
+- jurisdiction and venue;
+- time window and cutoff time;
+- primary question: facts/changes, experience/evaluation, methods/solutions, or opinions/trends;
+- desired signal: official event, product fact, narrative, sentiment, disagreement, risk, or jargon.
 
-Build an entity map before broad social search:
+For “new information,” use facts/changes as the primary mode and opinions/trends as secondary. Increase verification intensity automatically because financial claims may affect decisions.
 
-- formal name and common names;
-- ticker, fund code, exchange, and currency when relevant;
-- instrument type and issuer or fund manager;
-- tracked index and index provider for index funds or ETFs;
-- sector, theme, principal holdings, and upstream or downstream entities when the question concerns a market narrative;
-- English, Chinese, local-language, and community aliases.
+## 3. Assign source roles before retrieval
 
-Do not assume that similar names, share classes, exchange suffixes, or linked products are interchangeable. Record the exact instrument used in the search.
+Use three distinct roles:
 
-## Use a two-pass jargon search
+1. **Discovery/community:** investor communities and social platforms reveal attention, experiences, emerging narratives, disagreement, rumors, and jargon.
+2. **Primary verification:** the controlling exchange, regulator, statutory disclosure system, issuer filing, fund manager, index provider, or official statistical/industry body verifies the facts within its authority.
+3. **Context/data:** reputable news, transcripts, and timestamped market-data sources explain chronology and market reaction without replacing the original filing.
 
-### Pass 1: formal anchors
+Verify each material factual claim with the source that controls that fact. Examples: exchange status with the exchange; rule or enforcement with the regulator; company event with the filing/IR record; fund terms and holdings with the manager; index changes with the index provider.
 
-Search the verified entity names, codes, sector terms, constituent names, official event terms, and date window. Collect a small set of current, diverse results.
+If a primary source is unavailable, label the event “awaiting primary confirmation” rather than upgrading a news rewrite or repeated post.
 
-### Pass 2: community language
+## 4. Search formal anchors, then community language
 
-Extract recurring:
+**Pass 1—formal anchors:** exact entity, code, venue, event term, filing term, constituent or supply-chain entity, and date window.
 
-- abbreviations, cashtags, nicknames, homophones, emoji, and deliberate substitutions;
-- industry-chain shorthand and newly grouped `concept` names;
-- phrases describing rallies, drawdowns, crowding, rotation, fear, or enthusiasm;
-- coded references used to avoid moderation or direct promotion rules.
+**Pass 2—community language:** extract recurring cashtags, abbreviations, nicknames, homophones, emoji, moderation-avoidance terms, industry-chain shorthand, and newly grouped “concept” labels.
 
-Map a term only when its meaning is supported by context, repeated co-occurrence, identifiable entities, or an explanatory source. Assign `high`, `medium`, or `low` mapping confidence. Search high-confidence terms; search medium-confidence terms only when they could materially change coverage. Report low-confidence terms without treating them as synonyms.
+Map slang only when supported by repeated co-occurrence, context, an identifiable entity, or an explanatory source. Assign `high`, `medium`, or `low` confidence. Search high-confidence terms; search medium-confidence terms only if they can materially change coverage; report low-confidence terms without treating them as synonyms.
 
-Limit expansion to one additional pass unless the user asks for a deep search. Do not let slang discovery create unbounded queries.
+One expansion pass is the default. Stop when new terms only recycle the same sources or narrative.
 
-## Separate source roles
+## 5. Build the minimum product snapshot when relevant
 
-Use three roles rather than treating every website as equivalent.
+For a fund, ETF, index product, or sector vehicle, collect only the current facts needed to avoid a misleading interpretation:
 
-### 1. Discovery and community interpretation
-
-Use investor communities and general social platforms to discover:
-
-- emerging themes and causal stories;
-- user-observed effects and practical product issues;
-- sentiment, disagreement, and attention shifts;
-- rumors, misunderstood announcements, and new jargon.
-
-These sources show what is being discussed, not necessarily what is true.
-
-### 2. Primary verification
-
-Verify material factual claims against the source with the relevant authority:
-
-- exchange and statutory disclosure platforms for listings, filings, trading status, inquiries, disciplinary actions, and exchange-traded fund notices;
-- regulators for rules, enforcement, approvals, and investor warnings;
-- company filings and investor-relations pages for company events;
-- fund managers for prospectuses, periodic reports, holdings, fees, distributions, and product changes;
-- index providers for methodology, constituents, rebalances, and classification;
-- official statistical or industry bodies for macro and sector data.
-
-Exchange announcements are mandatory for exchange-governed events, but they are not a complete source for every catalyst. Policy changes, industry data, commodity events, overseas developments, and community narratives may originate elsewhere.
-
-### 3. Context and market data
-
-Use reputable news, transcripts, and timestamped market-data sources to explain context. Do not substitute a news rewrite for the original filing when the original is available.
-
-Attach timestamps and market venue to prices, flows, holdings, valuations, and rankings. Treat figures copied into social posts as unverified until matched to a traceable data source.
-
-## Build a fund or product facts snapshot
-
-Before evaluating a fund, ETF, index product, or sector vehicle, collect the smallest current snapshot that can prevent a misleading conclusion:
-
-- exact product, share class, code, market, currency, and tracked index or mandate;
-- latest official NAV or market price with its as-of date;
-- recent performance over relevant windows and, when available, drawdown or volatility;
-- fund size, fees, manager or tracking difference, and material product changes;
+- exact product/share class, code, market, currency, mandate or tracked index;
+- latest official NAV and/or market price with as-of time;
+- relevant performance window and any needed split/distribution adjustment;
+- size, fee, manager, tracking difference, liquidity, and material product changes when available;
 - sector, geography, currency, and top-holding concentration;
-- premium or discount, liquidity, distributions, splits, or other technical adjustments when applicable;
-- valuation, flows, or positioning only when the source and timestamp are traceable.
+- premium/discount, flows, valuation, or positioning only when traceable and relevant.
 
-Mark unavailable items as gaps. Do not fill them with figures copied from social posts. A downstream portfolio review should know both what the market is discussing and what product the user actually owns.
+Mark missing items as data gaps. Never fill them from an unattributed social screenshot. Do not force a full product snapshot into a question that is only about one verified corporate event.
 
-## Route the search by question
+## 6. Verify chronology and causal boundaries
 
-### Facts and changes
+For each finding, separate:
 
-Search the authoritative source and social discussion in parallel. Rank:
+- announcement/publication time;
+- effective or event time;
+- market-reaction window;
+- social-post time;
+- discovery time.
 
-1. primary filing, exchange, regulator, issuer, or fund-manager statement;
-2. event time and current validity;
-3. independent reporting or direct observation;
-4. community interpretation;
-5. engagement only as visibility.
+Check whether the information was already public before the claimed reaction. Price movement after a post does not prove the post's explanation; list competing explanations and what evidence would distinguish them.
 
-### Experience and evaluation
-
-Use for fund-platform usability, subscription or redemption friction, tracking experience, disclosure accessibility, or other lived product experience. Filter referral promotion and sponsored recommendations strictly. Do not generalize one investor's return or tax situation.
-
-### Methods and solutions
-
-Use for locating a disclosure, interpreting a product mechanism, reproducing a public calculation, or resolving a platform-data mismatch. Prefer official definitions, versioned methodology, and reproducible steps. Do not turn procedural explanation into a trading instruction.
-
-### Opinions and trends
-
-Sample different communities, languages, time points, and opposing views. Separate:
-
-- attention from conviction;
-- sentiment from holdings;
-- narrative popularity from factual confirmation;
-- repeated promotion from independent agreement.
-
-Do not claim representative market sentiment without a defined sample and method.
-
-## Detect promotion and manipulation risk
-
-Apply the base commercial-content filter plus these market-specific warnings:
-
-- referral links, paid groups, private-message invitations, courses, advisory services, or undisclosed product distribution;
-- guaranteed returns, urgency, screenshots of profits, unsupported target prices, or selective track records;
-- accounts promoting an illiquid instrument while hiding position or compensation conflicts;
-- coordinated slogans, copy-pasted theses, bot amplification, or sudden low-information posting bursts;
-- commentary that cites only price movement as proof of the underlying story;
-- fund or ETF promotion that ignores fees, liquidity, tracking difference, concentration, currency, or eligibility.
-
-Classify promotion or manipulation risk as `low`, `medium`, or `high`. Exclude high-risk material from conclusions. Use medium-risk content only to document that a narrative exists, not to support the narrative's truth.
-
-Do not accuse an identifiable person of manipulation without strong, attributable evidence. Describe observable indicators and uncertainty.
-
-## Classify each finding
-
-Assign one content class before synthesis:
+Classify each item:
 
 - **Verified market event:** confirmed by the appropriate primary source.
-- **Reported event awaiting confirmation:** specific and relevant but not yet matched to a primary source.
-- **Market narrative:** a causal interpretation or thesis that may explain attention but is not itself a fact.
-- **Sentiment signal:** an observed reaction within a named platform or community.
-- **Product or process experience:** a bounded firsthand report.
+- **Reported event awaiting confirmation:** specific but not matched to the controlling source.
+- **Market narrative:** a causal interpretation or thesis, not itself a fact.
+- **Sentiment signal:** a bounded reaction in a named community and window.
+- **Product/process experience:** a bounded firsthand report.
 - **Promotion or low-integrity signal:** commercially compromised, coordinated, or unsupported.
 
-Also preserve the base skill's source identity, evidence status, event time, and rollout or correction state.
+Also preserve the base skill's source identity, evidence status, correction/rollout state, and access limitations.
 
-## Return a market evidence packet
+## 7. Screen promotion and manipulation risk
 
-Lead with what is known, not with what is popular:
+Apply the base commercial filter plus market-specific indicators:
 
-1. **Current answer:** strongest conclusion and material uncertainty.
-2. **Product facts:** exact product, dated NAV or price, structure, concentration, fees, and material data gaps when applicable.
-3. **Verified events:** primary-source fact, event time, market, and direct link.
-4. **Emerging narratives:** supporting signals, counterarguments, and what would confirm or weaken each narrative.
-5. **Community sentiment:** platform, audience, time window, disagreement, and sampling limitation.
-6. **Jargon map:** term, likely meaning, mapped entity, and confidence.
-7. **Risks and unresolved claims:** rumors, stale information, missing disclosures, and promotion risk.
-8. **Coverage:** platforms, official sources, query families, time window, and inaccessible sources.
+- referral links, paid groups, private-message invitations, advisory services, or undisclosed distribution;
+- guaranteed returns, urgency, profit screenshots, unsupported targets, or selective track records;
+- promotion of an illiquid instrument with hidden position or compensation conflicts;
+- coordinated slogans, copy-pasted theses, bot amplification, or sudden low-information bursts;
+- price movement cited as the only proof of the underlying story;
+- fund promotion that omits fees, liquidity, tracking difference, concentration, currency, or eligibility.
 
-Keep the packet concise. Do not collapse multiple share classes, markets, products, or event dates into one claim. Do not infer portfolio suitability from popularity or past performance.
+Classify risk `low`, `medium`, or `high`. Exclude high-risk material from factual conclusions. Use medium-risk content only to show that a narrative exists. Describe observable indicators; do not accuse an identifiable person of manipulation without strong attributable evidence.
 
-## Support downstream use
+## 8. Return a market evidence packet
 
-A separate investment-research or portfolio skill may combine this packet with objectives, risk tolerance, valuation, diversification, liquidity, tax, and scenario analysis. Keep those decisions outside this search skill.
+Lead with what is known, not what is popular. Include only applicable sections:
 
-For repeat searches, accept prior claims, URLs, and a cutoff time. Return material new events, narrative changes, corrections, and newly emerging jargon. Do not create monitoring schedules or send alerts unless the user explicitly requests those separate actions.
+1. **Current answer:** strongest conclusion, exact entity, cutoff time, and material uncertainty.
+2. **Product facts:** dated snapshot and gaps when product structure matters.
+3. **Verified events:** primary-source fact, event/effective time, market, and direct link.
+4. **Emerging narratives:** supporting signals, counterevidence, and what would confirm or weaken each.
+5. **Community sentiment:** platform, audience, window, disagreement, and sampling limitation.
+6. **Jargon map:** term, mapped entity/meaning, and confidence.
+7. **Risks/unresolved claims:** stale data, missing primary sources, rumors, and promotion risk.
+8. **Coverage:** community platforms, official sources, access states, queries, languages, and search time.
+
+Do not collapse share classes, markets, currencies, products, or event dates. Do not infer portfolio suitability from popularity or past performance.
+
+For repeat searches, accept prior claims, URLs, and cutoff time; return material new events, narrative changes, corrections, and newly emerging jargon. Scheduling and alerts remain separate, explicitly requested actions.

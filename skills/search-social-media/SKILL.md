@@ -13,244 +13,132 @@ description: >-
 
 # Search Social Media
 
-## Core contract
+Use this skill as a bounded, read-only evidence layer for public or account-authorized social content that general web search may index poorly. Return traceable signals and uncertainty; leave domain recommendations, monitoring, publishing, and account actions to their owning workflows.
 
-Use this skill as a lightweight cross-platform retrieval and evidence layer. Search public or account-authorized platform-native content that ordinary web search may not index well.
+## Evidence contract
 
-Do not require the user or a calling skill to choose a search category. Infer the question, search it, filter low-value content, compare platforms, and return a compact evidence packet. Let downstream skills perform domain planning, recommendations, monitoring, scheduling, or delivery.
+- A social post can establish that a named source said or experienced something; it does not automatically establish that the underlying claim is true.
+- Separate discovery, firsthand testimony, professional interpretation, public opinion, and authoritative verification.
+- Never infer missing identity, date, location, engagement, authorship, or access from context alone.
+- Preserve disagreement and failed solutions; do not average conflicting claims into false consensus.
+- Do not call prose “AI-generated” from style alone. Assess low-integrity or commercial risk from provenance, incentives, duplication, specificity, and behavior together.
+- For medical, legal, financial, safety, travel-entry, or other high-stakes rules, use social media for discovery and lived experience only. Verify material rules with the controlling authority before treating them as reliable.
 
-Treat social posts as signals, not automatically as facts. Separate discovery, testimony, opinion, and verification.
+## 1. Interpret the request
 
-## Classify the basic question
+Assign one primary question and any useful secondary question:
 
-Assign one primary mode and any useful secondary modes. Do not force a request into only one mode.
+1. **Facts and changes:** what happened, when, and whether it is still current.
+2. **Experience and evaluation:** what identifiable users experienced, including conditions and limitations.
+3. **Methods and solutions:** which steps were attempted, in what environment, with what outcome.
+4. **Opinions and trends:** which narratives or reactions appear in a defined community and time window.
 
-### 1. Facts and changes
+Infer time window, geography/language, named entities, desired depth, and verification intensity. Ask only when ambiguity would materially change the search target or evidence standard. If “latest,” “recent,” or an unstable current state is requested, record the search time and use current retrieval.
 
-Answer: What happened? What changed? What is the current state?
+## 2. Select sources by role
 
-Prioritize in this order:
+Read `references/platforms.md` when platform choice or access behavior is uncertain.
 
-1. verification and original-source proximity;
-2. event time and current validity;
-3. independent corroboration;
-4. relevance;
-5. engagement only as a discovery tie-breaker.
+Choose the smallest complementary set that can answer the question. Prefer diversity of role over platform count—for example, a primary-source account plus a user community, or a specialist forum plus a broad discussion platform. Do not claim cross-platform consensus from two platforms that recycle the same source.
 
-Search exact names, dates, announcements, observed rollout, corrections, reversals, and counterclaims.
+For each source, record its role:
 
-### 2. Experience and evaluation
+- primary or direct subject;
+- identifiable firsthand participant;
+- relevant professional or specialist;
+- ordinary user or community discussion;
+- anonymous or unverifiable account.
 
-Answer: What is it actually like? What worked, failed, or caused friction?
+## 3. Probe access before searching deeply
 
-Prioritize in this order:
+Use one small read-only probe per selected platform and record the live state: accessible, login required, blocked, partial, or unavailable.
 
-1. commercial independence and credible firsthand context;
-2. match to the situation being asked about;
-3. concrete details, trade-offs, and negative as well as positive evidence;
-4. diversity across authors, times, and platforms;
-5. freshness when the experience can change.
+Access order:
 
-Search lived-experience language, complaints, limitations, comparisons, and counterexamples. Apply the commercial-content filter strictly.
+1. purpose-built connector or platform skill;
+2. the user's existing authorized Chrome session;
+3. in-app browser or controlled browser;
+4. computer-use only when structured browser access cannot complete a necessary read-only step;
+5. public web discovery as a fallback, clearly labeled when it cannot expose platform-native context.
 
-### 3. Methods and solutions
+Do not install extensions or dependencies, export cookies/tokens, bypass CAPTCHA or risk controls, or ask for passwords. When login is needed, ask the user to complete it manually. Stop on unexpected verification, account warnings, or private-content boundaries.
 
-Answer: How can it be done, reproduced, or fixed?
+## 4. Build bounded query families
 
-Prioritize in this order:
+Start with the smallest useful set:
 
-1. reproducible steps or direct demonstration;
-2. version, device, region, and configuration match;
-3. relevant expertise or repeated successful use;
-4. independent confirmation;
-5. freshness for version-sensitive procedures.
+- **Exact:** names, handles, product/version, quoted error, event, and date.
+- **Expansion:** aliases, translations, local terminology, symptoms, or related mechanism.
+- **Counter:** correction, rollback, failure, unchanged state, opposing experience, or official clarification.
 
-Search exact errors, versions, settings, workarounds, failure conditions, and reports that a proposed fix did not work.
+Use up to three query families as a default, not a quota. Stop earlier when new results repeat known sources and claims; expand only when an evidence gap could change the answer. For deep-search requests, state the expanded scope before continuing.
 
-### 4. Opinions and trends
+## 5. Capture evidence, not screenshots of impressions
 
-Answer: What do relevant communities think, and how is the discussion moving?
-
-Prioritize in this order:
-
-1. audience and community relevance;
-2. diversity and independence of viewpoints;
-3. identifiable incentives and authentic participation;
-4. change over time;
-5. engagement only as a signal of visibility.
-
-Separate sentiment from factual claims. Do not convert a loud or coordinated group into a population-level conclusion.
-
-### Combine modes
-
-Use a primary mode to control ranking and secondary modes to add evidence rather than averaging all criteria.
-
-Example: `Did Codex change its usage-limit reset behavior, and how are users reacting?` uses **facts and changes** as the primary mode and **opinions and trends** as the secondary mode. Verify the change before summarizing reactions.
-
-## Infer cross-cutting conditions
-
-Infer these conditions from natural language; ask only when ambiguity would materially change the work:
-
-- **time:** live, recent delta, or stable baseline;
-- **scope:** location, language, audience, product version, or community;
-- **source preference:** ordinary users, local observers, professionals, direct subjects, or official accounts;
-- **verification intensity:** normal, disputed, or high-stakes;
-- **depth:** quick scan or bounded deep search.
-
-For a stable baseline, look for experiences or explanations repeated across a longer period. For a recent delta, use a clear cutoff and report when an item is likely to expire. When both matter, report `Stable baseline` and `Recent changes` separately.
-
-Use these default time windows only as starting points:
-
-- breaking events: 6–24 hours;
-- active product, company, platform, or public-event changes: 7–30 days;
-- user experience and troubleshooting: 3–12 months;
-- background opinion: no strict limit, while preferring material still relevant now.
-
-## Choose platforms and access tools
-
-Read [references/platforms.md](references/platforms.md) before selecting platforms or applying platform-specific queries.
-
-Start with two complementary platforms. Add a third or fourth only when it contributes a different audience, language, geography, or evidence type. Assign each platform a role: discovery, original-source tracing, independent corroboration, firsthand observation, or community reaction.
-
-Choose the safest capable access method in this order:
-
-1. use a trusted, purpose-built platform connector or MCP tool when it exposes the required public content through a documented, authorized interface;
-2. use controlled Chrome with the user's existing logged-in session for platform-native results that require account state;
-3. use an in-app or ordinary browser for public pages that do not depend on the user's Chrome session;
-4. use Computer Use only when structured browser or connector controls cannot operate the necessary visible interface;
-5. use ordinary web search for discovery or coverage gaps, not as a substitute for native search when native results materially differ.
-
-For each selected platform, verify the first candidate access method with the smallest useful read-only probe. Treat an access path as available only when it returns the platform-native result or content needed for the task; a configured connector, installed command, or visible login is not enough by itself.
-
-Classify the live access state as `available`, `authorization required`, `constrained`, or `unavailable`, and keep one active access path per platform for the current task. On an ordinary transient failure, retry once; if it still fails, move to the next already available and user-authorized method in the order above. Do not invent commands, install packages or connectors, add browser extensions, or request exported credentials as part of a search. Report a material access gap and ask separately before any setup work.
-
-Treat MCP as an access interface, not a credibility signal. An unofficial MCP that wraps fragile private endpoints or browser automation may be less stable and riskier than controlled Chrome. Do not add a connector merely because it is called MCP.
-
-Prefer visible, user-authorized access. Do not use hidden private APIs, CAPTCHA bypasses, anti-detection browsers, proxy pools, or extracted session credentials.
-
-## Build queries
-
-Generate at most three query bundles per platform:
-
-1. **Exact:** formal entity, event, claim, version, date, or place.
-2. **Expansion:** aliases, abbreviations, colloquial terms, symptoms, local-language equivalents, and community jargon.
-3. **Counter:** correction, denial, failure, counterexample, negative experience, source, or reproduction terms.
-
-Adapt the bundles to the primary mode. Do not run all bundles when the exact query already produces diverse, relevant evidence. Stop when additional variants or scrolling mostly repeat existing claims.
-
-Example for `Did Codex change its usage-limit reset behavior?`:
-
-- exact: `Codex usage limit reset change`;
-- expansion: `Codex quota reset rolling window usage cap`;
-- counter: `Codex reset unchanged reverted official clarification`.
-
-## Filter commercial and inauthentic content
-
-Apply this filter before ranking evidence on every platform.
-
-### Exclude from organic evidence
-
-- explicit advertisements, affiliate links, discount codes, booking or purchase calls to action;
-- vendor, agency, or brand posts presented as independent user recommendations;
-- copied promotional text or coordinated campaigns with no independent evidence;
-- obvious bot spam, mass-generated posts, or engagement bait that adds no substantive information.
-
-Use a commercial post only for the organization's own stated offer or position, and label it accordingly.
-
-### Down-rank and seek corroboration
-
-- repeated praise of one provider with no limitations or alternatives;
-- templated listicles with generic completeness but no dates, sequence, mistakes, measurements, or verifiable context;
-- suspiciously identical structure, wording, images, or recommendations across accounts;
-- polished causal claims unsupported by documents, tests, or firsthand detail;
-- posts whose author relationship to the promoted subject is unclear.
-
-Do not label a post as AI-generated from prose style alone. Classify commercial or automated-content risk as `low`, `medium`, or `high` from incentives, provenance, specificity, duplication, and behavior together. Exclude high-risk items from conclusions; use medium-risk items only when independently corroborated.
-
-Report only the number and main reasons for filtered items unless the user asks to inspect them.
-
-## Execute and capture
-
-For each selected platform:
-
-1. run the smallest useful query set;
-2. compare recent and relevant or popular views when both matter;
-3. collect 5–15 strong candidates and stop before 20 unless deep search was requested;
-4. open enough candidates to judge provenance, evidence, context, and commercial risk;
-5. preserve meaningful disagreement and failed solutions.
+Open enough candidates to judge provenance and context. Candidate counts are heuristics; stop by coverage and saturation rather than scroll length.
 
 Capture when visible:
 
-- active access path, live access state, and material access limitation;
-- platform, title or atomic claim, account, and identifiable role;
-- post time, described event time, and discovery time;
-- direct URL and visible engagement;
-- evidence or firsthand context offered;
-- commercial or automated-content risk.
+- atomic claim and the source's role;
+- platform, account, direct URL, and stable identifier if available;
+- post time, described event time, and discovery time as separate fields;
+- firsthand details, documents, tests, screenshots, or reproducible steps offered;
+- environment, version, geography, sample, or other conditions;
+- visible engagement only as an attention signal;
+- commercial, automation, or coordination risk.
 
-Do not infer missing dates, identities, or engagement values.
+Paraphrase by default. Quote only when exact wording is material and keep the excerpt short.
 
-## Normalize and assess
+## 6. Filter and normalize
 
-- Split bundled posts into atomic claims.
-- Merge duplicate URLs, copied screenshots, and obvious cross-posts.
-- Count a repost or coordinated cluster as one source unless a member adds independent evidence.
-- Trace claims to the earliest visible or primary source.
-- Preserve conflicts rather than averaging them away.
+Exclude from organic evidence:
 
-Label source identity separately:
+- explicit ads, affiliate links, discount codes, purchase calls, or undisclosed vendor material;
+- copied promotion, obvious spam, engagement bait, and coordinated duplicates with no independent evidence;
+- content whose only support is another unattributed screenshot or repost.
 
-- official institution or direct subject;
-- identifiable firsthand participant;
-- relevant professional;
-- ordinary user;
-- anonymous or unverifiable account.
+A brand or organization post may support what that organization officially stated, but not independent evaluation of its own offer.
 
-Label evidence status separately:
+Down-rank claims with unclear incentives, generic praise, no conditions, copied structure, unsupported causal stories, or hidden author relationships. Label risk `low`, `medium`, or `high`; use high-risk items only to document that a claim circulates, not that it is true.
 
-- **Verified:** traceable to a primary statement, document, or direct evidence.
-- **Corroborated:** supported by at least two independent sources with consistent details.
-- **Plausible single source:** credible access or firsthand context without independent support.
-- **Unverified:** anonymous, second-hand, screenshot-only, unsupported, or commercially compromised.
-- **Contradicted:** conflicts with a reliable correction, primary source, or stronger evidence.
+Then:
 
-For releases, policies, benefits, or future events, also label the state:
+- split bundled posts into atomic claims;
+- merge duplicate URLs, cross-posts, copied screenshots, and coordinated clusters;
+- trace reposted claims to the earliest visible or primary source;
+- count independent evidence, not account count;
+- preserve counterexamples and corrections.
 
-- **Announced**;
-- **Rolling out**;
-- **User-observed**;
-- **Broadly confirmed**;
-- **Corrected or reversed**.
+## 7. Assess each claim
 
-A newer repost is not new evidence. An older primary source may outrank a newer rumor. Do not upgrade an announcement to completion because many accounts repeat it.
+Keep source identity separate from evidence status:
 
-For medical, legal, financial, safety, entry-rule, or other high-stakes claims, use social media for discovery and lived experience only. Require authoritative verification before presenting rules or recommendations as reliable.
+- **Verified:** matched to the appropriate primary statement, document, or directly inspectable evidence.
+- **Corroborated:** consistent detail from at least two genuinely independent sources.
+- **Plausible single source:** credible firsthand access or specialist context without independent support.
+- **Unverified:** anonymous, second-hand, screenshot-only, unsupported, inaccessible, or commercially compromised.
+- **Contradicted:** conflicts with a stronger primary source, correction, or better evidence.
 
-## Return a social evidence packet
+For releases, policies, benefits, and future events, also distinguish `announced`, `rolling out`, `user-observed`, `broadly confirmed`, and `corrected/reversed`. A newer repost is not newer evidence, and repetition does not turn an announcement into completed rollout.
 
-Return the smallest structure that preserves provenance:
+## 8. Return a compact evidence packet
 
-1. **Answer:** strongest current conclusion and uncertainty.
-2. **Stable baseline and recent changes:** include both only when the question needs both.
-3. **Strongest signals:** atomic claim, platform, source, time, evidence status, and direct link.
-4. **Consensus, disagreement, and failed counterexamples.**
-5. **Unverified or filtered-content note:** material rumors plus the count and main reasons for excluded commercial or automated items.
-6. **Coverage:** platforms and roles, active access paths and states, time window, query families, and meaningful gaps.
+Lead with the answer and uncertainty, then include only the sections needed:
 
-For a quick search, compress these sections. Paraphrase unless exact wording is essential. Never invent quotations, inaccessible content, or population-level conclusions from an unrepresentative sample.
+1. **Current conclusion:** what the evidence supports now and what remains uncertain.
+2. **Strongest signals:** atomic claim, source role, platform, relevant times, evidence status, and direct link.
+3. **Agreement and disagreement:** independent convergence, material counterexamples, and failed solutions.
+4. **Unverified/filtered note:** important rumors plus the count and main reasons for excluded or down-ranked items.
+5. **Coverage:** platforms, roles, access state, time window, query families, search time, and meaningful gaps.
 
-Do not turn the evidence packet into a domain plan. A travel, purchasing, technical-support, or research skill may call this skill and combine its output with official sources, user constraints, and domain reasoning.
+Do not generalize to a population without a defined sampling method. Do not invent inaccessible quotations or represent a thin convenience sample as “the internet thinks.”
 
-## Preserve read-only safety
+## Read-only safety and stopping rules
 
-- Do not like, repost, comment, follow, message, publish, or modify account state.
-- Do not inspect or export cookies, passwords, local storage, or session tokens.
-- Do not access private messages, closed groups, paid communities, friends-only posts, or leaked personal information.
-- Search platforms sequentially and keep each pass bounded.
-- Stop on CAPTCHA, risk-control warnings, forced verification, or unexpected login challenges. Ask the user to complete supported login or verification manually.
+- Do not like, repost, comment, follow, message, publish, save, or modify account state.
+- Do not inspect private messages, closed groups, paid communities, friends-only posts, or leaked personal data.
+- Do not expose cookies, session tokens, credentials, or private account identifiers in notes or output.
+- Stop when the core claim has appropriate verification and further results are duplicates; when selected sources are inaccessible and fallbacks cannot answer; or when risk controls require user action.
+- If a prior search cutoff, URLs, or claim list is supplied, return material additions, corrections, and changes rather than repeating the full baseline.
 
-## Support downstream reuse
-
-When a caller supplies a previous-search time, baseline URLs, or prior claims, return only material additions, corrections, and changes while still reporting coverage.
-
-Include direct URLs and search time so a separate workflow can monitor changes. Do not create schedules, persist monitoring state, or send email unless the user explicitly requests those separate actions.
+Include direct URLs and search time so another workflow can reuse the evidence. Do not create schedules, alerts, or persistent monitoring unless the user separately requests them.
